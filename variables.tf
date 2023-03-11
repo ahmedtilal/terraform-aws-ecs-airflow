@@ -1,7 +1,7 @@
 variable "region" {
   type        = string
   description = "The region to deploy your solution to"
-  default     = "eu-west-1"
+  default     = "eu-west-2"
 }
 
 variable "resource_prefix" {
@@ -30,7 +30,7 @@ variable "airflow_image_name" {
 variable "airflow_image_tag" {
   type        = string
   description = "The tag of the airflow image"
-  default     = "2.0.1"
+  default     = "2.5.1"
 }
 
 variable "airflow_executor" {
@@ -59,6 +59,16 @@ variable "airflow_py_requirements_path" {
   type        = string
   description = "The relative path to a python requirements.txt file to install extra packages in the container that you can use in your DAGs."
   default     = ""
+}
+
+variable "airflow_core_fernet_key" {
+  type        = string
+  description = "Airflow configuration fernet key. AIRFLOW__CORE__FERNET_KEY env variable."
+}
+
+variable "airflow_webserver_secret_key" {
+  type        = string
+  description = "Airflow web server secret key. AIRFLOW__WEBSERVER__SECRET_KEY."
 }
 
 variable "airflow_variables" {
@@ -195,7 +205,6 @@ variable "certificate_arn" {
 variable "route53_zone_name" {
   type        = string
   description = "The name of a Route53 zone that will be used for the certificate validation."
-  default     = ""
 }
 
 
@@ -249,7 +258,7 @@ variable "rds_instance_class" {
 variable "rds_availability_zone" {
   type        = string
   description = "Availability zone for the rds instance"
-  default     = "eu-west-1a"
+  default     = "eu-west-2a"
 }
 
 variable "rds_skip_final_snapshot" {
@@ -273,6 +282,6 @@ variable "rds_version" {
 // S3 Bucket
 variable "s3_bucket_name" {
   type        = string
-  default     = ""
+  default     = "blue-airflow"
   description = "The S3 bucket name where the DAGs and startup scripts will be stored, leave this blank to let this module create a s3 bucket for you. WARNING: this module will put files into the path \"dags/\" and \"startup/\" of the bucket"
 }

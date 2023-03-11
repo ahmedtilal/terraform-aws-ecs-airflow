@@ -32,8 +32,10 @@ locals {
   airflow_volume_name              = "airflow"
   // Keep the 2 env vars second, we want to override them (this module manges these vars)
   airflow_variables = merge(var.airflow_variables, {
-    AIRFLOW__CORE__SQL_ALCHEMY_CONN : local.db_uri,
+    AIRFLOW__DATABASE__SQL_ALCHEMY_CONN : local.db_uri,
     AIRFLOW__CORE__EXECUTOR : "${var.airflow_executor}Executor",
+    AIRFLOW__CORE__FERNET_KEY: "${var.airflow_core_fernet_key}",
+    AIRFLOW__WEBSERVER__SECRET_KEY: "${var.airflow_webserver_secret_key}",
     AIRFLOW__WEBSERVER__RBAC : var.airflow_authentication == "" ? false : true,
     AIRFLOW__WEBSERVER__AUTH_BACKEND : lookup(local.auth_map, var.airflow_authentication, "")
     AIRFLOW__WEBSERVER__BASE_URL : var.use_https ? "https://${local.dns_record}" : "http://localhost:8080" # localhost is default value
@@ -43,8 +45,8 @@ locals {
 
   rds_ecs_subnet_ids = length(var.private_subnet_ids) == 0 ? var.public_subnet_ids : var.private_subnet_ids
 
-  dns_record      = var.dns_name != "" ? var.dns_name : (var.route53_zone_name != "" ? "${var.resource_prefix}-airflow-${var.resource_suffix}.${data.aws_route53_zone.zone[0].name}" : "")
-  certificate_arn = var.use_https ? (var.certificate_arn != "" ? var.certificate_arn : aws_acm_certificate.cert[0].arn) : ""
+  dns_record      = var.dns_name != "" ? var.dns_name : (var.route53_zone_name != "" ? "${var.resource_prefix}-airflow-${var.resource_suffix}.${data.aws_route53_zone.zone.name}" : "")
+  certificate_arn = var.use_https ? (var.certificate_arn != "" ? var.certificate_arn : aws_acm_certificate.cert.arn) : ""
 
   inbound_ports = toset(var.use_https ? ["80", "443"] : ["80"])
 }
